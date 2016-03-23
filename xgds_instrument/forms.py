@@ -15,3 +15,50 @@
 # __END_LICENSE__
 
 from django import forms
+from django.conf import settings
+import pytz
+
+from geocamTrack.forms import AbstractImportTrackedForm
+from geocamUtil.extFileField import ExtFileField
+from geocamUtil.loader import LazyGetModelByName
+from django.forms import DateTimeField, ModelChoiceField
+from geocamUtil.extFileField import ExtFileField
+
+
+class InstrumentModelChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.displayName
+
+
+class ImportInstrumentDataForm(AbstractImportTrackedForm):
+    date_formats = list(forms.DateTimeField.input_formats) + [
+        '%Y/%m/%d %H:%M:%S',
+        '%Y-%m-%d %H:%M:%S',
+        '%m/%d/%Y %H:%M'
+        ]
+    dataCollectionTime = DateTimeField(label="Collection Time",
+                                       input_formats=date_formats,
+                                       required=False,
+                                       )
+    INSTRUMENT_MODEL = \
+                LazyGetModelByName(settings.XGDS_INSTRUMENT_INSTRUMENT_MODEL)
+    instrument = InstrumentModelChoiceField(INSTRUMENT_MODEL.get().objects.all(), 
+                                            label="Instrument")
+    portableDataFile = ExtFileField(ext_whitelist=(".spc",".txt",".csv" ),
+                                    required=True,
+                                    label="Portable Data File")
+    manufacturerDataFile = ExtFileField(ext_whitelist=(".pdz",".a2r",".asd" ),
+                                        required=True,
+                                        label="Manufacturer Data File")
+
+    def clean_dataCollectionTime(self):
+        ctime = self.cleaned_data['dataCollectionTime']
+
+        if not ctime:
+            return None
+        else:
+            tz = self.getTimezone()
+            naiveTime = ctime.replace(tzinfo=None)
+            localizedTime = tz.localize(naiveTime)
+            utctime = localizedTime.astimezone(pytz.utc)
+            return utctime

@@ -35,4 +35,17 @@ Don't try to get the value of FOO from django.conf.settings.  That
 settings object will not know about the default value!
 """
 
-xgds_instrument_BOWER_INSTALLED_APPS = ()
+from geocamUtil.SettingsUtil import getOrCreateArray, getOrCreateDict
+
+BOWER_INSTALLED_APPS = getOrCreateArray('BOWER_INSTALLED_APPS')
+BOWER_INSTALLED_APPS += []
+
+XGDS_INSTRUMENT_INSTRUMENT_MODEL = 'xgds_instrument.ScienceInstrument'
+XGDS_INSTRUMENT_IMPORT_MODULE_PATH = 'xgds_instrument.instrumentDataImporters'
+XGDS_INSTRUMENT_DATA_SUBDIRECTORY = "xgds_instrument/"
+
+# Include a dictionary of name to url for imports if you wish to include import functionality
+XGDS_DATA_IMPORTS = getOrCreateDict('XGDS_DATA_IMPORTS')
+XGDS_DATA_IMPORTS["Science Instruments"]= '/xgds_instrument/instrumentDataImport'
+
+SCIENCE_INSTRUMENT_DATA_IMPORTERS = []

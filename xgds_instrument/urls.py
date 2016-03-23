@@ -14,12 +14,12 @@
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
 
-from django.conf.urls import patterns, include
-
+from django.conf.urls import patterns, include, url
 from django.views.generic.base import TemplateView
 from xgds_instrument import views
 
 
-urlpatterns = patterns('',
-                       (r'^$', TemplateView.as_view(template_name='xgds_instrument/index.html'), {}, 'index'),
-                       )
+urlpatterns = [
+    url(r'^instrumentDataImport/$', views.instrumentDataImport, 
+        name='instrument_data_import'),
+]

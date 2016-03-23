@@ -18,3 +18,39 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.template import RequestContext
 from django.utils.translation import ugettext, ugettext_lazy as _
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.conf import settings
+from xgds_instrument.forms import ImportInstrumentDataForm
+
+def lookupImportFunctionByName(moduleName, functionName):
+    importModule = __import__(moduleName)
+    function = getattr(getattr(importModule, moduleName.split(".")[-1]),
+                       functionName)
+    return function
+
+@login_required
+def instrumentDataImport(request):
+    errors = None
+    if request.method == 'POST':
+        form = ImportInstrumentDataForm(request.POST, request.FILES)
+        if form.is_valid():
+            instrument = form.cleaned_data["instrument"]
+            importFxn = lookupImportFunctionByName(
+                settings.XGDS_INSTRUMENT_IMPORT_MODULE_PATH,
+                instrument.dataImportFunctionName)
+            return importFxn(instrument, request.FILES["portableDataFile"],
+                             request.FILES["manufacturerDataFile"],
+                             form.cleaned_data["dataCollectionTime"],
+                             form.getTimezone(), form.getResource(),
+                             request.user)
+        else:
+            errors = form.errors
+    return render(
+        request,
+        'xgds_instrument/importInstrumentData.html',
+        {
+            'form': ImportInstrumentDataForm(),
+            'errorstring': errors
+        },
+    )
