@@ -19,9 +19,13 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.template import RequestContext
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from xgds_instrument.forms import ImportInstrumentDataForm
+from requests.api import request
+from geocamUtil.loader import LazyGetModelByName
+
+INSTRUMENT_DATA_PRODUCT_MODEL = LazyGetModelByName(settings.XGDS_INSTRUMENT_DATA_PRODUCT_MODEL)
 
 def lookupImportFunctionByName(moduleName, functionName):
     importModule = __import__(moduleName)
@@ -54,3 +58,13 @@ def instrumentDataImport(request):
             'errorstring': errors
         },
     )
+
+def viewInstrumentDataProduct(request, pk):
+        dataProduct = get_object_or_404(INSTRUMENT_DATA_PRODUCT_MODEL.get(), pk=pk)
+        return render(
+            request,
+            'xgds_instrument/viewInstrumentDataProduct.html',
+            {
+                'dataProduct': dataProduct
+            },
+        )

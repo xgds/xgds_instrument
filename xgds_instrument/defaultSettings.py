@@ -43,6 +43,7 @@ BOWER_INSTALLED_APPS += []
 XGDS_INSTRUMENT_INSTRUMENT_MODEL = 'xgds_instrument.ScienceInstrument'
 XGDS_INSTRUMENT_IMPORT_MODULE_PATH = 'xgds_instrument.instrumentDataImporters'
 XGDS_INSTRUMENT_DATA_SUBDIRECTORY = "xgds_instrument/"
+XGDS_INSTRUMENT_DATA_PRODUCT_MODEL = 'xgds_instrument.InstrumentDataProduct'
 
 # Include a dictionary of name to url for imports if you wish to include import functionality
 XGDS_DATA_IMPORTS = getOrCreateDict('XGDS_DATA_IMPORTS')

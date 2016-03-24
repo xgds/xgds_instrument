@@ -76,3 +76,7 @@ class AbstractInstrumentDataProduct(models.Model):
 
     def __unicode__(self):
         return "%s: %s, %s" % (self.acquisition_time, self.instrument.codeName, self.mimeType)
+
+
+class InstrumentDataProduct(AbstractInstrumentDataProduct):
+    pass

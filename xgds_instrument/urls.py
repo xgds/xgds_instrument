@@ -20,6 +20,6 @@ from xgds_instrument import views
 
 
 urlpatterns = [
-    url(r'^instrumentDataImport/$', views.instrumentDataImport, 
-        name='instrument_data_import'),
+    url(r'^instrumentDataImport/$', views.instrumentDataImport, name='instrument_data_import'),
+    url(r'^viewInstrumentDataProduct/(?P<pk>[\d]+)$', views.viewInstrumentDataProduct, name='instrument_data_product_view'),
 ]
