@@ -17,6 +17,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from geocamUtil.modelJson import modelToDict
 
 def getNewDataFileName(instance, filename):
     return settings.XGDS_INSTRUMENT_DATA_SUBDIRECTORY + filename
@@ -70,7 +71,24 @@ class AbstractInstrumentDataProduct(models.Model):
                                  null=True, blank=True)
     user = models.ForeignKey(User, null=True, blank=True)
     instrument = models.ForeignKey(ScienceInstrument)
-
+    
+    def toMapDict(self):
+        result = modelToDict(self)
+        result['type'] = 'InstrumentDataProduct'
+        result['instrumentName'] = self.instrument.name
+        result['acquisitionTime'] = self.acquisition_time.strftime("%m/%d/%Y %H:%M")
+        result['acquisitionTimezone'] = str(self.acquisition_timezone)
+        if self.location:
+            result['lat'] = self.location.latitude
+            result['lon'] = self.location.longitude
+            if self.location.altitude:
+                result['altitude'] = self.location.altitude
+        else: 
+            result['lat'] = ''
+            result['lon'] = ''
+            
+        return result
+    
     class Meta:
         abstract = True
 

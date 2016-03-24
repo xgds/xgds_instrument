@@ -22,8 +22,8 @@
 
 // initialize the notes when the window is ready
 $(document).ready(function() {
-	{% if sample %}
-		showOnMap([{{sample.toMapDict|json_dumps|safe}}]);
+	{% if dataProduct %}
+		showOnMap([{{dataProduct.toMapDict|json_dumps|safe}}]);
 	{% endif %}
 	var container = $('#notes_content');
 	var tbl = container.find('table#notes_list');
