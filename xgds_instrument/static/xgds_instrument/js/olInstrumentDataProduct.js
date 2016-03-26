@@ -46,7 +46,7 @@ var InstrumentDataProduct = {
         constructMapElement:function(dataJson){
             var coords = transform([dataJson.lon, dataJson.lat]);
             var feature = new ol.Feature({
-                name: dataJson.name,
+                name: dataJson.instrumentName,
                 geometry: new ol.geom.Point(coords)
             });
             feature.setStyle(this.getStyles(dataJson));
@@ -56,7 +56,7 @@ var InstrumentDataProduct = {
         getStyles: function(dataJson) {
             var styles = [this.styles['iconStyle']];
             var theText = new ol.style.Text(this.styles['text']);
-            theText.setText(dataJson.name);
+            theText.setText(dataJson.instrumentName);
             var textStyle = new ol.style.Style({
                 text: theText
             });
@@ -64,15 +64,15 @@ var InstrumentDataProduct = {
             return styles;
         },
         setupPopup: function(feature, dataJson) {
-            var data = ["Instrument:", dataJson.isntrumentName,
-                        "Collector:", dataJson.collectedBy ? dataJson.collectedBy : '',
+            var data = ["EV:", dataJson.ev_name ? dataJson.ev_name : '',
+                        "Collector:", dataJson.collector ? dataJson.collector : '',
                         "Flight:", dataJson.flight ? dataJson.flight : '',
                         "Time:", dataJson.acquisitionTime ? getLocalTimeString(dataJson.acquisitionTime, dataJson.acquisitionTimezone):''
                         ];
 
             var trString = "<tr><td>%s</td><td>%s</td></tr>";
             var formattedString = "<table>";
-            for (j = 0; j< data.length; j++){
+            for (j = 0; j< data.length/2; j++){
                 formattedString = formattedString + trString;
             }
             formattedString = formattedString + "</table>";

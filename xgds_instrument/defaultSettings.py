@@ -50,3 +50,8 @@ XGDS_DATA_IMPORTS = getOrCreateDict('XGDS_DATA_IMPORTS')
 XGDS_DATA_IMPORTS["Science Instruments"]= '/xgds_instrument/instrumentDataImport'
 
 SCIENCE_INSTRUMENT_DATA_IMPORTERS = []
+
+XGDS_MAP_SERVER_JS_MAP = getOrCreateDict('XGDS_MAP_SERVER_JS_MAP')
+XGDS_MAP_SERVER_JS_MAP['InstrumentDataProduct'] = {'ol': 'xgds_instrument/js/olInstrumentDataProduct.js',
+                                                   'model': XGDS_INSTRUMENT_DATA_PRODUCT_MODEL,
+                                                   'hiddenColumns': []}

@@ -14,8 +14,9 @@
 # specific language governing permissions and limitations under the License.
 # __END_LICENSE__
 
+import json
 from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404
+from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404, HttpResponse
 from django.template import RequestContext
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
@@ -68,3 +69,8 @@ def viewInstrumentDataProduct(request, pk):
                 'dataProduct': dataProduct
             },
         )
+
+def getInstrumentDataJson(request, productPk):
+    dataProduct = get_object_or_404(INSTRUMENT_DATA_PRODUCT_MODEL.get(), pk=productPk)
+    sampleList = dataProduct.samples
+    return HttpResponse(json.dumps(sampleList), content_type='application/json')

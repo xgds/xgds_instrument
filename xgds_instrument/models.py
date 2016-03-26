@@ -18,6 +18,8 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from geocamUtil.modelJson import modelToDict
+from geocamUtil.UserUtil import getUserName
+
 
 def getNewDataFileName(instance, filename):
     return settings.XGDS_INSTRUMENT_DATA_SUBDIRECTORY + filename
@@ -67,17 +69,42 @@ class AbstractInstrumentDataProduct(models.Model):
     acquisition_time = models.DateTimeField(null=True, blank=True)
     acquisition_timezone = models.CharField(max_length=128)
     server_creation_time = models.DateTimeField(null=True, blank=True)
-    location = models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL,
-                                 null=True, blank=True)
-    user = models.ForeignKey(User, null=True, blank=True)
+    location = models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True)
+    collector = models.ForeignKey(User, null=True, blank=True, related_name="%(app_label)s_%(class)s_collector") # person who collected the instrument data
+    creator = models.ForeignKey(User, null=True, blank=True, related_name="%(app_label)s_%(class)s_creator") # person who entered instrument data into Minerva
+    
     instrument = models.ForeignKey(ScienceInstrument)
     
+    @property
+    def modelAppLabel(self):
+        return self._meta.app_label
+    
+    @property
+    def modelTypeName(self):
+        t = type(self)
+        if t._deferred:
+            t = t.__base__
+        
+        return t._meta.object_name
+
+    # Returns the instrument reading(s) for this data product (e.g. wavenumber and reflectance for a spectrum)
+    @property
+    def samples(self):
+        return []
+
     def toMapDict(self):
-        result = modelToDict(self)
+        result = modelToDict(self, exclude=("manufacturer_data_file", "portable_data_file"))
+        if self.collector:
+            result['collector'] = getUserName(self.collector)
+        else:
+            result['collector'] = ''
+        del result['creator']
         result['type'] = 'InstrumentDataProduct'
-        result['instrumentName'] = self.instrument.name
+        result['instrumentName'] = self.instrument.displayName
         result['acquisitionTime'] = self.acquisition_time.strftime("%m/%d/%Y %H:%M")
         result['acquisitionTimezone'] = str(self.acquisition_timezone)
+        result['manufacturerDataFile'] = self.manufacturer_data_file.url
+        result['portableDataFile'] = self.portable_data_file.url
         if self.location:
             result['lat'] = self.location.latitude
             result['lon'] = self.location.longitude

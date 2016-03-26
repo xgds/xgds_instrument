@@ -31,8 +31,8 @@ $(document).ready(function() {
 	    var dt = $(tbl).dataTable();
 	    dt.fnClearTable();
 	}
-	initializeNotesReference(container, '{{sample.modelAppLabel}}', '{{sample.modelTypeName}}', '{{sample.pk }}', '{{sample.collection_time|date:"Y-m-d H:i:s"}}' + ' UTC', '{{sample.collection_timezone}}');
-	getNotesForObject('{{sample.modelAppLabel}}', '{{sample.modelTypeName}}', '{{sample.pk }}', 'notes_content', tbl);
+	initializeNotesReference(container, '{{dataProduct.modelAppLabel}}', '{{dataProduct.modelTypeName}}', '{{dataProduct.pk }}', '{{dataProduct.acquisition_time|date:"Y-m-d H:i:s"}}' + ' UTC', '{{dataProduct.acquisition_timezone}}');
+	getNotesForObject('{{dataProduct.modelAppLabel}}', '{{dataProduct.modelTypeName}}', '{{dataProduct.pk }}', 'notes_content', tbl);
 	
 	// show the notes div
 	var notes_input_div = $("#notes_input");
@@ -48,17 +48,20 @@ $(document).ready(function() {
 {% endblock jsInit %} 
 
 {% block firstPackery %} 
-<div class='item w2 lockAspect' id='item_sample_create' data-isStamped="false">
+<div class='item w2 lockAspect' id='instrument_data_summary' data-isStamped="false">
 	<div class="error-message upload-error"></div>
 	<i class="icon-lock-open pinDiv"></i><br />
 	<div id="save-status"> {{status}} </div>
 	
-	<div> <strong> Viewing Instrument Data Product</strong> </div>
+	<div> <strong>{{dataProduct.instrument.displayName}} Data Product</strong> </div>
 	<table>
 		<tr>
-			<th><label for="id_name">Pk:</label></th>
-			<td> {{ dataProduct.pk }}</td>
+			<th><label for="id_name">ID</label></th><th><label>Inst</label>
 		</tr>
+		<tr>
+			<td> {{ dataProduct.pk }}</td><td>{{ dataProduct.instrument.displayName }}</td>
+		</tr>
+
 	</table>
 	<div id="complete_notes">
 		<strong>Notes</strong>
