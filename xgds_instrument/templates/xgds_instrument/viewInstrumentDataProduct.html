@@ -56,10 +56,11 @@ $(document).ready(function() {
 	<div> <strong>{{dataProduct.instrument.displayName}} Data Product</strong> </div>
 	<table>
 		<tr>
-			<th><label for="id_name">ID</label></th><th><label>Inst</label>
+		    <th><label for="id_name"><em>ID</em></label></th><th><label><em>Flight</em></label></th><th><label><em>Collector</em></label></th>
+		    <th><label><em>Time</em></label></th>
 		</tr>
 		<tr>
-			<td> {{ dataProduct.pk }}</td><td>{{ dataProduct.instrument.displayName }}</td>
+			<td style="padding-right:20px;"> {{ dataProduct.pk }}</td><td style="padding-right:20px;">{% if dataProduct.flight %}{{dataProduct.flight}}{% else %}-none-{% endif %}</td><td style="padding-right:20px;">{{dataProduct.resource.vehicle.name}}: {{dataProduct.collector.first_name}} {{dataProduct.collector.last_name}}</td><td>{% timezone dataProduct.acquisition_timezone %}{{dataProduct.acquisition_time|date:"Y-m-d H:i:s"}}{% endtimezone %}</td>
 		</tr>
 
 	</table>
