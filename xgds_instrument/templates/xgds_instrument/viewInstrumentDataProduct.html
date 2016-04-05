@@ -46,8 +46,11 @@ $(document).ready(function() {
 
 {% endblock jsInit %} 
 
-{% block firstPackery %} 
-<div class='item w2 lockAspect' id='instrument_data_summary' data-isStamped="false">
+{% block preMap %}
+<div class="grid-stack-item" id='instrument_data_summary'
+        data-gs-x="0" data-gs-y="0"
+        data-gs-width="3" data-gs-height="2">
+            <div class="grid-stack-item-content"> 
 	<div class="error-message upload-error"></div>
 	<i class="icon-lock-open pinDiv"></i><br />
 	<div id="save-status"> {{status}} </div>
@@ -72,5 +75,5 @@ $(document).ready(function() {
 	</div>
 	{% csrf_token %}	
 </div>
-{{ block.super }}
-{% endblock firstPackery %}
+</div>
+{% endblock preMap %}
