@@ -34,21 +34,8 @@
 {% endblock scripts %}
 
 {% block jsInit %}
-var tzDict = {};
-{% for key,val in siteframes_dict %}
-	tzDict['{{key}}'] = '{{val.timezone}}';
-{% endfor %}
 
-function getTimeZone() {
- var key = $("id_timezone").val();
- if (key in tzDict) {
-	return tzDict[key];
-  } else {
-     return 'Etc/UTC';
- }
-}
  $(document).ready( function () {
-//$("#id_timezone").change();
- addDateTimePicker("id_dataCollectionTime", 'Etc/UTC'); //getTimeZone());
+ addDateTimePicker("id_dataCollectionTime", 'Etc/UTC'); 
 });
 {% endblock jsInit %}
