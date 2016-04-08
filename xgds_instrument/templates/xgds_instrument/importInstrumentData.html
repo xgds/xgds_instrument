@@ -2,7 +2,7 @@
 {% block siteSection %}Import Instrument Data{% endblock %}
 
 {% load tz %}
-{% load tz_convert %}
+{% load siteFrames %}
 
 {% block cssExtras %}
 {{ block.super }}
@@ -35,7 +35,7 @@
 
 {% block jsInit %}
 var tzDict = {};
-{% for key,val in settings.XGDS_SITEFRAMES %}
+{% for key,val in siteframes_dict %}
 	tzDict['{{key}}'] = '{{val.timezone}}';
 {% endfor %}
 
