@@ -27,10 +27,6 @@ $(document).ready(function() {
 	{% endif %}
 	var container = $('#notes_content');
 	var tbl = container.find('table#notes_list');
-	if ( $.fn.DataTable.isDataTable( tbl) ) {
-	    var dt = $(tbl).dataTable();
-	    dt.fnClearTable();
-	}
 	initializeNotesReference(container, '{{dataProduct.modelAppLabel}}', '{{dataProduct.modelTypeName}}', '{{dataProduct.pk }}', '{{dataProduct.acquisition_time|date:"Y-m-d H:i:s"}}' + ' UTC', '{{dataProduct.acquisition_timezone}}');
 	getNotesForObject('{{dataProduct.modelAppLabel}}', '{{dataProduct.modelTypeName}}', '{{dataProduct.pk }}', 'notes_content', tbl);
 	

@@ -94,6 +94,13 @@ class AbstractInstrumentDataProduct(models.Model):
 
     def toMapDict(self):
         result = modelToDict(self, exclude=("manufacturer_data_file", "portable_data_file"))
+        result['pk'] = int(self.pk)
+        result['app_label'] = self._meta.app_label
+        t = type(self)
+        if t._deferred:
+            t = t.__base__
+        result['model_type'] = t._meta.object_name
+
         if self.collector:
             result['collector'] = getUserName(self.collector)
         else:
