@@ -68,7 +68,7 @@ class AbstractInstrumentDataProduct(models.Model):
     portable_file_format_name = models.CharField(max_length=128, default="ASCII")
     acquisition_time = models.DateTimeField(null=True, blank=True)
     acquisition_timezone = models.CharField(max_length=128)
-    server_creation_time = models.DateTimeField(null=True, blank=True)
+    creation_time = models.DateTimeField(null=True, blank=True) # this is the SERVER creation time, not the acquisition time
     location = models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True)
     collector = models.ForeignKey(User, null=True, blank=True, related_name="%(app_label)s_%(class)s_collector") # person who collected the instrument data
     creator = models.ForeignKey(User, null=True, blank=True, related_name="%(app_label)s_%(class)s_creator") # person who entered instrument data into Minerva
@@ -84,7 +84,6 @@ class AbstractInstrumentDataProduct(models.Model):
         t = type(self)
         if t._deferred:
             t = t.__base__
-        
         return t._meta.object_name
 
     # Returns the instrument reading(s) for this data product (e.g. wavenumber and reflectance for a spectrum)
@@ -95,11 +94,8 @@ class AbstractInstrumentDataProduct(models.Model):
     def toMapDict(self):
         result = modelToDict(self, exclude=("manufacturer_data_file", "portable_data_file"))
         result['pk'] = int(self.pk)
-        result['app_label'] = self._meta.app_label
-        t = type(self)
-        if t._deferred:
-            t = t.__base__
-        result['model_type'] = t._meta.object_name
+        result['app_label'] = self.modelAppLabel
+        result['model_type'] = self.modelTypeName
 
         if self.collector:
             result['collector'] = getUserName(self.collector)
@@ -108,10 +104,10 @@ class AbstractInstrumentDataProduct(models.Model):
         del result['creator']
         result['type'] = 'InstrumentDataProduct'
         result['instrumentName'] = self.instrument.displayName
-        result['acquisitionTime'] = self.acquisition_time.strftime("%m/%d/%Y %H:%M")
-        result['acquisitionTimezone'] = str(self.acquisition_timezone)
-        result['manufacturerDataFile'] = self.manufacturer_data_file.url
-        result['portableDataFile'] = self.portable_data_file.url
+        result['acquisition_time'] = self.acquisition_time.strftime("%m/%d/%Y %H:%M")
+        result['acquisition_timezone'] = str(self.acquisition_timezone)
+        result['manufacturer_data_file'] = self.manufacturer_data_file.url
+        result['portable_data_file'] = self.portable_data_file.url
         if self.location:
             result['lat'] = self.location.latitude
             result['lon'] = self.location.longitude
