@@ -38,7 +38,7 @@ settings object will not know about the default value!
 from geocamUtil.SettingsUtil import getOrCreateArray, getOrCreateDict
 
 BOWER_INSTALLED_APPS = getOrCreateArray('BOWER_INSTALLED_APPS')
-BOWER_INSTALLED_APPS += []
+BOWER_INSTALLED_APPS += ['flot']
 
 XGDS_INSTRUMENT_INSTRUMENT_MODEL = 'xgds_instrument.ScienceInstrument'
 XGDS_INSTRUMENT_IMPORT_MODULE_PATH = 'xgds_instrument.instrumentDataImporters'
