@@ -43,7 +43,6 @@ BOWER_INSTALLED_APPS += []
 XGDS_INSTRUMENT_INSTRUMENT_MODEL = 'xgds_instrument.ScienceInstrument'
 XGDS_INSTRUMENT_IMPORT_MODULE_PATH = 'xgds_instrument.instrumentDataImporters'
 XGDS_INSTRUMENT_DATA_SUBDIRECTORY = "xgds_instrument/"
-XGDS_INSTRUMENT_DATA_PRODUCT_MODEL = 'xgds_instrument.InstrumentDataProduct'
 
 # Include a dictionary of name to url for imports if you wish to include import functionality
 XGDS_DATA_IMPORTS = getOrCreateDict('XGDS_DATA_IMPORTS')
@@ -52,6 +51,6 @@ XGDS_DATA_IMPORTS["Science Instruments"]= '/xgds_instrument/instrumentDataImport
 SCIENCE_INSTRUMENT_DATA_IMPORTERS = []
 
 XGDS_MAP_SERVER_JS_MAP = getOrCreateDict('XGDS_MAP_SERVER_JS_MAP')
-XGDS_MAP_SERVER_JS_MAP['InstrumentDataProduct'] = {'ol': 'xgds_instrument/js/olInstrumentDataProduct.js',
-                                                   'model': XGDS_INSTRUMENT_DATA_PRODUCT_MODEL,
-                                                   'hiddenColumns': []}
+# XGDS_MAP_SERVER_JS_MAP['InstrumentDataProduct'] = {'ol': 'xgds_instrument/js/olInstrumentDataProduct.js',
+#                                                    'model': XGDS_INSTRUMENT_DATA_PRODUCT_MODEL,
+#                                                    'hiddenColumns': []}

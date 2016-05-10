@@ -26,8 +26,6 @@ from xgds_instrument.forms import ImportInstrumentDataForm
 from requests.api import request
 from geocamUtil.loader import LazyGetModelByName
 
-INSTRUMENT_DATA_PRODUCT_MODEL = LazyGetModelByName(settings.XGDS_INSTRUMENT_DATA_PRODUCT_MODEL)
-
 def lookupImportFunctionByName(moduleName, functionName):
     importModule = __import__(moduleName)
     function = getattr(getattr(importModule, moduleName.split(".")[-1]),
@@ -51,26 +49,20 @@ def instrumentDataImport(request):
                              request.user)
         else:
             errors = form.errors
+    else:
+        form = ImportInstrumentDataForm()
     return render(
         request,
         'xgds_instrument/importInstrumentData.html',
         {
-            'form': ImportInstrumentDataForm(),
+            'form': form,
             'errorstring': errors
         },
     )
 
-def viewInstrumentDataProduct(request, pk):
-        dataProduct = get_object_or_404(INSTRUMENT_DATA_PRODUCT_MODEL.get(), pk=pk)
-        return render(
-            request,
-            'xgds_instrument/viewInstrumentDataProduct.html',
-            {
-                'dataProduct': dataProduct
-            },
-        )
 
-def getInstrumentDataJson(request, productPk):
+def getInstrumentDataJson(request, productModel, productPk):
+    INSTRUMENT_DATA_PRODUCT_MODEL = LazyGetModelByName(productModel)
     dataProduct = get_object_or_404(INSTRUMENT_DATA_PRODUCT_MODEL.get(), pk=productPk)
     sampleList = dataProduct.samples
     return HttpResponse(json.dumps(sampleList), content_type='application/json')
