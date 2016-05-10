@@ -15,6 +15,9 @@
 # __END_LICENSE__
 
 import json
+import csv
+import pytz
+
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404, HttpResponse
 from django.template import RequestContext
@@ -66,3 +69,20 @@ def getInstrumentDataJson(request, productModel, productPk):
     dataProduct = get_object_or_404(INSTRUMENT_DATA_PRODUCT_MODEL.get(), pk=productPk)
     sampleList = dataProduct.samples
     return HttpResponse(json.dumps(sampleList), content_type='application/json')
+
+def getInstrumentDataCsv(request, productModel, productPk):
+    INSTRUMENT_DATA_PRODUCT_MODEL = LazyGetModelByName(productModel)
+    dataProduct = get_object_or_404(INSTRUMENT_DATA_PRODUCT_MODEL.get(), pk=productPk)
+    sampleList = dataProduct.samples
+    labels = settings.XGDS_MAP_SERVER_JS_MAP[dataProduct.instrument.displayName]['plotLabels']
+    stringtime = dataProduct.acquisition_time.astimezone(pytz.timezone(dataProduct.acquisition_timezone)).strftime('%Y_%m_%d_%H%M')
+    filename = "%s_%s.csv" % (dataProduct.instrument.displayName, stringtime) 
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=' + filename
+
+    csvWriter = csv.writer(response, quoting=csv.QUOTE_NONNUMERIC)
+    csvWriter.writerow(labels)
+    for s in sampleList:
+        csvWriter.writerow(s)
+        
+    return response

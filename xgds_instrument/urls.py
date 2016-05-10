@@ -22,4 +22,5 @@ from xgds_instrument import views
 urlpatterns = [
     url(r'^instrumentDataImport/$', views.instrumentDataImport, name='instrument_data_import'),
     url(r'^getInstrumentDataJson/(?P<productModel>[\w]+[\.]*[\w]*)/(?P<productPk>[\d]+)$', views.getInstrumentDataJson, name='instrument_data_json'),
+    url(r'^getInstrumentDataCsv/(?P<productModel>[\w]+[\.]*[\w]*)/(?P<productPk>[\d]+)$', views.getInstrumentDataCsv, name='instrument_data_csv'),
 ]

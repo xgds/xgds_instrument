@@ -81,6 +81,11 @@ class AbstractInstrumentDataProduct(models.Model):
         return reverse('instrument_data_json',  kwargs={'productModel': self.modelAppLabel + '.' + self.modelTypeName,
                                                         'productPk': str(self.pk)})
 
+    @property
+    def csvDataUrl(self):
+        return reverse('instrument_data_csv',  kwargs={'productModel': self.modelAppLabel + '.' + self.modelTypeName,
+                                                       'productPk': str(self.pk)})
+
     
     @property
     def modelAppLabel(self):
@@ -116,6 +121,7 @@ class AbstractInstrumentDataProduct(models.Model):
         result['manufacturer_data_file'] = self.manufacturer_data_file.url
         result['portable_data_file'] = self.portable_data_file.url
         result['json_data'] = self.jsonDataUrl
+        result['csv_data'] = self.csvDataUrl
         if self.location:
             result['lat'] = self.location.latitude
             result['lon'] = self.location.longitude
