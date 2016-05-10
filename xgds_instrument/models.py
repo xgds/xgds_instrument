@@ -16,6 +16,7 @@
 
 from django.db import models
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from geocamUtil.modelJson import modelToDict
 from geocamUtil.UserUtil import getUserName
@@ -76,6 +77,12 @@ class AbstractInstrumentDataProduct(models.Model):
     instrument = models.ForeignKey(ScienceInstrument)
     
     @property
+    def jsonDataUrl(self):
+        return reverse('instrument_data_json',  kwargs={'productModel': self.modelAppLabel + '.' + self.modelTypeName,
+                                                        'productPk': str(self.pk)})
+
+    
+    @property
     def modelAppLabel(self):
         return self._meta.app_label
     
@@ -108,6 +115,7 @@ class AbstractInstrumentDataProduct(models.Model):
         result['acquisition_timezone'] = str(self.acquisition_timezone)
         result['manufacturer_data_file'] = self.manufacturer_data_file.url
         result['portable_data_file'] = self.portable_data_file.url
+        result['json_data'] = self.jsonDataUrl
         if self.location:
             result['lat'] = self.location.latitude
             result['lon'] = self.location.longitude
