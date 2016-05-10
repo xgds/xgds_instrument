@@ -86,7 +86,11 @@ class AbstractInstrumentDataProduct(models.Model):
         return reverse('instrument_data_csv',  kwargs={'productModel': self.modelAppLabel + '.' + self.modelTypeName,
                                                        'productPk': str(self.pk)})
 
-    
+    @property
+    def view_url(self):
+        return reverse('search_map_single_object', kwargs={'modelPK':self.pk,
+                                                           'modelName': self.instrument.displayName})
+
     @property
     def modelAppLabel(self):
         return self._meta.app_label
@@ -107,7 +111,10 @@ class AbstractInstrumentDataProduct(models.Model):
         result = modelToDict(self, exclude=("manufacturer_data_file", "portable_data_file"))
         result['pk'] = int(self.pk)
         result['app_label'] = self.modelAppLabel
-        result['model_type'] = self.modelTypeName
+        t = type(self)
+        if t._deferred:
+            t = t.__base__
+        result['model_type'] = t._meta.object_name
 
         if self.collector:
             result['collector'] = getUserName(self.collector)
