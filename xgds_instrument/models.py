@@ -20,6 +20,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from geocamUtil.modelJson import modelToDict
 from geocamUtil.UserUtil import getUserName
+from xgds_core.couchDbStorage import CouchDbStorage
 
 
 def getNewDataFileName(instance, filename):
@@ -55,16 +56,17 @@ class ScienceInstrument(models.Model):
         return "%s(%s): %s %s SN:%s" % (self.displayName, self.shortName, 
                                      self.brand, self.model, self.serialNum)
     
+couchStore = CouchDbStorage()
 
 class AbstractInstrumentDataProduct(models.Model):
     """ 
     A data product from a non-camera field instrument e.g. spectrometer
     """
-    manufacturer_data_file = models.FileField(upload_to=getNewDataFileName, max_length=255, null=True, blank=True)
+    manufacturer_data_file = models.FileField(upload_to=getNewDataFileName, max_length=255, null=True, blank=True, storage=couchStore)
     manufacturer_mime_type = models.CharField(max_length=128,
                                              default="application/octet-stream",
                                               null=True, blank=True)
-    portable_data_file = models.FileField(upload_to=getNewDataFileName, max_length=255)
+    portable_data_file = models.FileField(upload_to=getNewDataFileName, max_length=255, storage=couchStore)
     portable_mime_type = models.CharField(max_length=128, default="text/plain")
     portable_file_format_name = models.CharField(max_length=128, default="ASCII")
     acquisition_time = models.DateTimeField(null=True, blank=True)
