@@ -133,7 +133,7 @@ class AbstractInstrumentDataProduct(models.Model):
         del result['creator']
         result['type'] = 'InstrumentDataProduct'
         result['instrumentName'] = self.instrument.displayName
-        result['acquisition_time'] = self.acquisition_time.strftime("%m/%d/%Y %H:%M")
+        result['acquisition_time'] = self.acquisition_time 
         result['acquisition_timezone'] = str(self.acquisition_timezone)
         result['manufacturer_data_file'] = self.manufacturer_data_file.url
         result['portable_data_file'] = self.portable_data_file.url

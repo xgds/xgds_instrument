@@ -36,6 +36,6 @@
 {% block jsInit %}
 
  $(document).ready( function () {
- addDateTimePicker("id_dataCollectionTime", 'Etc/UTC'); 
+ addDateTimePicker("id_dataCollectionTime", '{{settings.TIME_ZONE}}'); //Etc/UTC'); 
 });
 {% endblock jsInit %}
