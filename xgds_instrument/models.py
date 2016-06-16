@@ -79,6 +79,10 @@ class AbstractInstrumentDataProduct(models.Model):
     instrument = models.ForeignKey(ScienceInstrument)
     
     @property
+    def name(self):
+        return self.instrument.displayName
+
+    @property
     def jsonDataUrl(self):
         return reverse('instrument_data_json',  kwargs={'productModel': self.modelAppLabel + '.' + self.modelTypeName,
                                                         'productPk': str(self.pk)})
