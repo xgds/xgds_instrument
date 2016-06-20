@@ -77,7 +77,26 @@ class AbstractInstrumentDataProduct(models.Model):
     creator = models.ForeignKey(User, null=True, blank=True, related_name="%(app_label)s_%(class)s_creator") # person who entered instrument data into Minerva
     
     instrument = models.ForeignKey(ScienceInstrument)
+
+    @property
+    def app_label(self):
+        return self._meta.app_label
     
+    @property
+    def type(self):
+        return 'InstrumentDataProduct'
+
+    @property
+    def model_type(self):
+        t = type(self)
+        if t._deferred:
+            t = t.__base__
+        return t._meta.object_name
+    
+    @property
+    def collector_name(self):
+        return getUserName(self.collector)
+
     @property
     def name(self):
         return self.instrument.displayName
@@ -92,6 +111,28 @@ class AbstractInstrumentDataProduct(models.Model):
         return reverse('instrument_data_csv',  kwargs={'productModel': self.modelAppLabel + '.' + self.modelTypeName,
                                                        'productPk': str(self.pk)})
 
+    @property
+    def manufacturer_data_file_url(self):
+        if self.manufacturer_data_file:
+            return self.manufacturer_data_file.url
+        return None
+    
+    @property
+    def portable_data_file_url(self):
+        if self.portable_data_file:
+            return self.portable_data_file.url
+        return None
+ 
+    @property
+    def instrument_name(self):
+        if self.instrument:
+            return self.instrument.displayName
+        return None
+
+    @property
+    def thumbnail_image_url(self):
+        return None
+    
     def thumbnail_url(self):
         return None
 
@@ -99,11 +140,38 @@ class AbstractInstrumentDataProduct(models.Model):
         return self.thumbnail_url()
 
     def view_time_url(self, event_time):
-        return self.view_url()
+        return self.view_url
 
+    @property
     def view_url(self):
         return reverse('search_map_single_object', kwargs={'modelPK':self.pk,
                                                            'modelName': self.instrument.displayName})
+    @property
+    def lat(self):
+        position = self.getPosition()
+        if position:
+            return position.latitude
+        
+    @property
+    def lon(self):
+        position = self.getPosition()
+        if position:
+            return position.longitude
+
+    @property
+    def altitude(self):
+        try:
+            position = self.getPosition()
+            if position:
+                return position.altitude
+        except:
+            pass
+        return None
+
+    def getPosition(self):
+        if self.location:
+            return self.location
+        return None
 
     @property
     def modelAppLabel(self):
@@ -136,13 +204,13 @@ class AbstractInstrumentDataProduct(models.Model):
             result['collector'] = ''
         del result['creator']
         result['type'] = 'InstrumentDataProduct'
-        result['instrumentName'] = self.instrument.displayName
+        result['instrument_name'] = self.instrument.displayName
         result['acquisition_time'] = self.acquisition_time.strftime('%Y-%m-%d %H:%M:%S')
         result['acquisition_timezone'] = str(self.acquisition_timezone)
-        result['manufacturer_data_file'] = self.manufacturer_data_file.url
-        result['portable_data_file'] = self.portable_data_file.url
-        result['json_data'] = self.jsonDataUrl
-        result['csv_data'] = self.csvDataUrl
+        result['manufacturer_data_file_url'] = self.manufacturer_data_file.url
+        result['portable_data_file_url'] = self.portable_data_file.url
+        result['jsonDataUrl'] = self.jsonDataUrl
+        result['csvDataUrl'] = self.csvDataUrl
         if self.location:
             result['lat'] = self.location.latitude
             result['lon'] = self.location.longitude
