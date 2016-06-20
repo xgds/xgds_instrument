@@ -21,6 +21,7 @@ from django.contrib.auth.models import User
 from geocamUtil.modelJson import modelToDict
 from geocamUtil.UserUtil import getUserName
 from xgds_core.couchDbStorage import CouchDbStorage
+from xgds_core.models import SearchableModel
 
 
 def getNewDataFileName(instance, filename):
@@ -58,7 +59,7 @@ class ScienceInstrument(models.Model):
     
 couchStore = CouchDbStorage()
 
-class AbstractInstrumentDataProduct(models.Model):
+class AbstractInstrumentDataProduct(models.Model, SearchableModel):
     """ 
     A data product from a non-camera field instrument e.g. spectrometer
     """
@@ -79,20 +80,9 @@ class AbstractInstrumentDataProduct(models.Model):
     instrument = models.ForeignKey(ScienceInstrument)
 
     @property
-    def app_label(self):
-        return self._meta.app_label
-    
-    @property
     def type(self):
-        return 'InstrumentDataProduct'
+        return self.instrument.displayName
 
-    @property
-    def model_type(self):
-        t = type(self)
-        if t._deferred:
-            t = t.__base__
-        return t._meta.object_name
-    
     @property
     def collector_name(self):
         return getUserName(self.collector)
@@ -103,12 +93,12 @@ class AbstractInstrumentDataProduct(models.Model):
 
     @property
     def jsonDataUrl(self):
-        return reverse('instrument_data_json',  kwargs={'productModel': self.modelAppLabel + '.' + self.modelTypeName,
+        return reverse('instrument_data_json',  kwargs={'productModel': self.app_label + '.' + self.model_type,
                                                         'productPk': str(self.pk)})
 
     @property
     def csvDataUrl(self):
-        return reverse('instrument_data_csv',  kwargs={'productModel': self.modelAppLabel + '.' + self.modelTypeName,
+        return reverse('instrument_data_csv',  kwargs={'productModel': self.app_label + '.' + self.model_type,
                                                        'productPk': str(self.pk)})
 
     @property
@@ -129,60 +119,11 @@ class AbstractInstrumentDataProduct(models.Model):
             return self.instrument.displayName
         return None
 
-    @property
-    def thumbnail_image_url(self):
-        return None
-    
-    def thumbnail_url(self):
-        return None
-
-    def thumbnail_time_url(self, event_time):
-        return self.thumbnail_url()
-
-    def view_time_url(self, event_time):
-        return self.view_url
-
-    @property
-    def view_url(self):
-        return reverse('search_map_single_object', kwargs={'modelPK':self.pk,
-                                                           'modelName': self.instrument.displayName})
-    @property
-    def lat(self):
-        position = self.getPosition()
-        if position:
-            return position.latitude
-        
-    @property
-    def lon(self):
-        position = self.getPosition()
-        if position:
-            return position.longitude
-
-    @property
-    def altitude(self):
-        try:
-            position = self.getPosition()
-            if position:
-                return position.altitude
-        except:
-            pass
-        return None
 
     def getPosition(self):
         if self.location:
             return self.location
         return None
-
-    @property
-    def modelAppLabel(self):
-        return self._meta.app_label
-    
-    @property
-    def modelTypeName(self):
-        t = type(self)
-        if t._deferred:
-            t = t.__base__
-        return t._meta.object_name
 
     # Returns the instrument reading(s) for this data product (e.g. wavenumber and reflectance for a spectrum)
     @property
@@ -192,11 +133,8 @@ class AbstractInstrumentDataProduct(models.Model):
     def toMapDict(self):
         result = modelToDict(self, exclude=("manufacturer_data_file", "portable_data_file"))
         result['pk'] = int(self.pk)
-        result['app_label'] = self.modelAppLabel
-        t = type(self)
-        if t._deferred:
-            t = t.__base__
-        result['model_type'] = t._meta.object_name
+        result['app_label'] = self.app_label
+        result['model_type'] = self.model_type
 
         if self.collector:
             result['collector'] = getUserName(self.collector)
@@ -212,10 +150,10 @@ class AbstractInstrumentDataProduct(models.Model):
         result['jsonDataUrl'] = self.jsonDataUrl
         result['csvDataUrl'] = self.csvDataUrl
         if self.location:
-            result['lat'] = self.location.latitude
-            result['lon'] = self.location.longitude
+            result['lat'] = self.lat
+            result['lon'] = self.lon
             if self.location.altitude:
-                result['altitude'] = self.location.altitude
+                result['altitude'] = self.altitude
         else: 
             result['lat'] = ''
             result['lon'] = ''
