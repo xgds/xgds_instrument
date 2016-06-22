@@ -82,6 +82,10 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
     
     instrument = models.ForeignKey(ScienceInstrument)
 
+    @classmethod
+    def timesearchField(self):
+        return 'acquisition_time'
+    
     @property
     def type(self):
         return self.instrument.displayName
