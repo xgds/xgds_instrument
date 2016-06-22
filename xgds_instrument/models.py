@@ -33,13 +33,13 @@ def getNewDataFileName(instance, filename):
 # in the UI.
 #
 class ScienceInstrument(models.Model):
-    shortName = models.CharField(max_length=32)  # Lower case, no spaces
-    displayName = models.CharField(max_length=128)
+    shortName = models.CharField(max_length=32, db_index=True)  # Lower case, no spaces
+    displayName = models.CharField(max_length=128, db_index=True)
     active = models.BooleanField(default=True)
     dataImportFunctionName = models.CharField(max_length=128)
-    brand = models.CharField(max_length=128)
-    model = models.CharField(max_length=128)
-    serialNum = models.CharField(max_length=128)
+    brand = models.CharField(max_length=128, db_index=True)
+    model = models.CharField(max_length=128, db_index=True)
+    serialNum = models.CharField(max_length=128, db_index=True)
     xLabel = models.CharField(max_length=64)
     yLabel = models.CharField(max_length=64)
     xUnits = models.CharField(max_length=32)
@@ -63,7 +63,7 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
     """ 
     A data product from a non-camera field instrument e.g. spectrometer
     """
-    name = models.CharField(max_length=128, default='', blank=True, null=True)
+    name = models.CharField(max_length=128, default='', blank=True, null=True, db_index=True)
     description = models.CharField(max_length=1024, blank=True)
 
     manufacturer_data_file = models.FileField(upload_to=getNewDataFileName, max_length=255, null=True, blank=True, storage=couchStore)
@@ -73,9 +73,9 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
     portable_data_file = models.FileField(upload_to=getNewDataFileName, max_length=255, storage=couchStore)
     portable_mime_type = models.CharField(max_length=128, default="text/plain")
     portable_file_format_name = models.CharField(max_length=128, default="ASCII")
-    acquisition_time = models.DateTimeField(null=True, blank=True)
-    acquisition_timezone = models.CharField(max_length=128)
-    creation_time = models.DateTimeField(null=True, blank=True) # this is the SERVER creation time, not the acquisition time
+    acquisition_time = models.DateTimeField(null=True, blank=True, db_index=True)
+    acquisition_timezone = models.CharField(max_length=128, db_index=True)
+    creation_time = models.DateTimeField(null=True, blank=True, db_index=True) # this is the SERVER creation time, not the acquisition time
     location = models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True)
     collector = models.ForeignKey(User, null=True, blank=True, related_name="%(app_label)s_%(class)s_collector") # person who collected the instrument data
     creator = models.ForeignKey(User, null=True, blank=True, related_name="%(app_label)s_%(class)s_creator") # person who entered instrument data into Minerva
