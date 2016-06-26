@@ -14,8 +14,8 @@
 {% endblock cssExtras %}
 
 {% block content %}
-<strong>Import Instrument Data</strong>
-<form id="instrument_data_import" action="{% url 'instrument_data_import' %}" method="post" enctype="multipart/form-data">
+<strong>{{instrumentType}} Data Import Form</strong>
+<form id="instrument_data_import" action="{{instrumentDataImportUrl}}" method="post" enctype="multipart/form-data">
 	<table>
     {{ form.as_table }}
     </table>
@@ -34,7 +34,6 @@
 {% endblock scripts %}
 
 {% block jsInit %}
-
  $(document).ready( function () {
  addDateTimePicker("id_dataCollectionTime", '{{settings.TIME_ZONE}}'); //Etc/UTC'); 
 });
