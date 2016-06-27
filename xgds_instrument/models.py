@@ -145,8 +145,9 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
         del result['creator']
         result['type'] = 'InstrumentDataProduct'
         result['instrument_name'] = self.instrument.displayName
-        result['acquisition_time'] = self.acquisition_time.strftime('%Y-%m-%d %H:%M:%S')
+        result['acquisition_time'] = self.acquisition_time.strftime('%Y-%m-%d %H:%M') 
         result['acquisition_timezone'] = str(self.acquisition_timezone)
+        result['creation_time'] = self.creation_time.strftime('%Y-%m-%d %H:%M:%S')
         result['manufacturer_data_file_url'] = self.manufacturer_data_file.url
         result['portable_data_file_url'] = self.portable_data_file.url
         result['jsonDataUrl'] = self.jsonDataUrl
