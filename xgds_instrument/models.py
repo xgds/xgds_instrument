@@ -85,10 +85,14 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
     def timesearchField(self):
         return 'acquisition_time'
     
+    @classmethod
+    def cls_type(cls):
+        return 'InstrumentData'
+    
     @property
     def type(self):
-        return self.instrument.displayName
-
+        return self.__class__.cls_type()
+    
     @property
     def collector_name(self):
         return getUserName(self.collector)
