@@ -23,7 +23,6 @@ from geocamUtil.UserUtil import getUserName
 from xgds_core.couchDbStorage import CouchDbStorage
 from xgds_core.models import SearchableModel
 
-
 def getNewDataFileName(instance, filename):
     return settings.XGDS_INSTRUMENT_DATA_SUBDIRECTORY + filename
 
@@ -64,7 +63,7 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
     A data product from a non-camera field instrument e.g. spectrometer
     """
     name = models.CharField(max_length=128, default='', blank=True, null=True, db_index=True)
-    description = models.CharField(max_length=1024, blank=True)
+    description = models.CharField(max_length=2048, blank=True)
 
     manufacturer_data_file = models.FileField(upload_to=getNewDataFileName, max_length=255, null=True, blank=True, storage=couchStore)
     manufacturer_mime_type = models.CharField(max_length=128,
@@ -164,7 +163,10 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
         else: 
             result['lat'] = ''
             result['lon'] = ''
-            
+        if self.name: 
+            result['name'] = self.name
+        if self.description: 
+            result['description'] = self.description
         return result
     
     class Meta:

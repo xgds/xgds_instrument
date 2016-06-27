@@ -27,13 +27,16 @@ from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from xgds_instrument.forms import ImportInstrumentDataForm
 from requests.api import request
+from django.core.urlresolvers import reverse
 from geocamUtil.loader import LazyGetModelByName
+
 
 def lookupImportFunctionByName(moduleName, functionName):
     importModule = __import__(moduleName)
     function = getattr(getattr(importModule, moduleName.split(".")[-1]),
                        functionName)
     return function
+
 
 @login_required
 def instrumentDataImport(request):
@@ -59,7 +62,9 @@ def instrumentDataImport(request):
         'xgds_instrument/importInstrumentData.html',
         {
             'form': form,
-            'errorstring': errors
+            'errorstring': errors,
+            'instrumentDataImportUrl': reverse('instrument_data_import'),
+            'instrumentType': 'Science Instruments'
         },
     )
 
@@ -69,6 +74,7 @@ def getInstrumentDataJson(request, productModel, productPk):
     dataProduct = get_object_or_404(INSTRUMENT_DATA_PRODUCT_MODEL.get(), pk=productPk)
     sampleList = dataProduct.samples
     return HttpResponse(json.dumps(sampleList), content_type='application/json')
+
 
 def getInstrumentDataCsv(request, productModel, productPk):
     INSTRUMENT_DATA_PRODUCT_MODEL = LazyGetModelByName(productModel)
