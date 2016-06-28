@@ -38,17 +38,17 @@ class ImportInstrumentDataForm(AbstractImportTrackedForm):
         ]
     dataCollectionTime = DateTimeField(label="Collection Time",
                                        input_formats=date_formats,
-                                       required=False,
+                                       required=True,
                                        )
     INSTRUMENT_MODEL = \
                 LazyGetModelByName(settings.XGDS_INSTRUMENT_INSTRUMENT_MODEL)
     instrument = InstrumentModelChoiceField(INSTRUMENT_MODEL.get().objects.all(), 
                                             label="Instrument")
-    portableDataFile = ExtFileField(ext_whitelist=(".spc",".txt",".csv" ),
+    portableDataFile = ExtFileField(ext_whitelist=(".spc",".txt",".csv",".asp" ),
                                     required=True,
                                     label="Portable Data File")
     manufacturerDataFile = ExtFileField(ext_whitelist=(".pdz",".a2r",".asd" ),
-                                        required=True,
+                                        required=False,
                                         label="Manufacturer Data File")
 
     def clean_dataCollectionTime(self):

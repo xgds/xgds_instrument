@@ -38,6 +38,19 @@ def lookupImportFunctionByName(moduleName, functionName):
     return function
 
 
+def editInstrumentData(request, instrument_name, pk):
+    form = ImportInstrumentDataForm()
+    errors = form.errors
+    return render(
+        request,
+        'xgds_instrument/editInstrumentData.html',
+        {
+            'form': form,
+            'errorstring': errors,
+        },
+    )
+
+
 @login_required
 def instrumentDataImport(request):
     errors = None

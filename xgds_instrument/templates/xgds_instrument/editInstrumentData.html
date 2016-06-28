@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block siteSection %}Edit Instrument Data{% endblock %}
+
+{% load tz %}
+{% load siteFrames %}
+
+{% block cssExtras %}
+{{ block.super }}
+<style type="text/css" title="currentStyle">
+	@import "{{ EXTERNAL_URL }}jquery-ui/themes/base/jquery-ui.css";
+	@import url('{{EXTERNAL_URL}}jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon.css');
+</style>
+
+{% endblock cssExtras %}
+
+{% block content %}
+<strong>{{instrumentType}} Data Import Form</strong>
+<form id="instrument_data_edit_form" action="#" method="post" enctype="multipart/form-data">
+	<table>
+    {{ form.as_table }}
+    </table>
+    <div id="buttons" >
+        <input id="save" class="mybutton" type="submit" value="Import">
+    </div>
+</form>
+{% endblock content %}
+
+{% block scripts %}
+  {{ block.super }}
+  	<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}jquery-ui/jquery-ui.min.js"></script>
+	{% include "xgds_core/timeJS.html" %}
+	<script language="javascript" type="text/javascript" src="{{ EXTERNAL_URL }}jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon.min.js"></script>
+	<script type="text/javascript" src='{{ STATIC_URL }}xgds_core/js/datetimepickerUtils.js'></script>
+{% endblock scripts %}
+
+{% block jsInit %}
+ $(document).ready( function () {
+ addDateTimePicker("id_dataCollectionTime", '{{settings.TIME_ZONE}}'); //Etc/UTC'); 
+});
+{% endblock jsInit %}
