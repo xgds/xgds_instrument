@@ -152,7 +152,10 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
         result['acquisition_time'] = self.acquisition_time.strftime('%Y-%m-%d %H:%M') 
         result['acquisition_timezone'] = str(self.acquisition_timezone)
         result['creation_time'] = self.creation_time.strftime('%Y-%m-%d %H:%M:%S')
-        result['manufacturer_data_file_url'] = self.manufacturer_data_file.url
+        if self.manufacturer_data_file:  # Manufacturer data file is optional
+            result['manufacturer_data_file_url'] = self.manufacturer_data_file.url
+        else:
+            result['manufacturer_data_file_url'] = None
         result['portable_data_file_url'] = self.portable_data_file.url
         result['jsonDataUrl'] = self.jsonDataUrl
         result['csvDataUrl'] = self.csvDataUrl

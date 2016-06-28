@@ -48,7 +48,7 @@ class ImportInstrumentDataForm(AbstractImportTrackedForm):
                                     required=True,
                                     label="Portable Data File")
     manufacturerDataFile = ExtFileField(ext_whitelist=(".pdz",".a2r",".asd" ),
-                                        required=True,
+                                        required=False,
                                         label="Manufacturer Data File")
 
     def clean_dataCollectionTime(self):
