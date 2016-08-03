@@ -75,7 +75,8 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
     acquisition_time = models.DateTimeField(null=True, blank=True, db_index=True)
     acquisition_timezone = models.CharField(max_length=128, db_index=True)
     creation_time = models.DateTimeField(null=True, blank=True, db_index=True) # this is the SERVER creation time, not the acquisition time
-    location = models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True)
+    track_position = models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True, related_name="%(app_label)s_%(class)s_track_position")
+    user_position = models.ForeignKey(settings.GEOCAM_TRACK_PAST_POSITION_MODEL, null=True, blank=True, related_name="%(app_label)s_%(class)s_user_position")
     collector = models.ForeignKey(User, null=True, blank=True, related_name="%(app_label)s_%(class)s_collector") # person who collected the instrument data
     creator = models.ForeignKey(User, null=True, blank=True, related_name="%(app_label)s_%(class)s_creator") # person who entered instrument data into Minerva
     
@@ -127,9 +128,9 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
 
 
     def getPosition(self):
-        if self.location:
-            return self.location
-        return None
+        if self.user_position:
+            return self.user_position
+        return self.track_position
 
     # Returns the instrument reading(s) for this data product (e.g. wavenumber and reflectance for a spectrum)
     @property

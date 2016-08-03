@@ -14,6 +14,7 @@
 # specific language governing permissions and limitations under the License.
 # __END_LICENSE__
 
+import datetime
 import json
 import csv
 import pytz
@@ -37,6 +38,23 @@ def lookupImportFunctionByName(moduleName, functionName):
                        functionName)
     return function
 
+
+def editInstrumentDataPosition(dataProduct, newLatitude, newLongitude, newAltitude):
+    ''' create or update the user position for an instrument data reading '''
+    if newLatitude != dataProduct.lat or newLongitude != dataProduct.lon or newAltitude != dataProduct.alt:
+        if dataProduct.user_position is None:
+            LOCATION_MODEL = LazyGetModelByName(settings.GEOCAM_TRACK_PAST_POSITION_MODEL)
+            dataProduct.user_position = LOCATION_MODEL.get().objects.create(serverTimestamp = datetime.datetime.now(pytz.utc),
+                                                                            timestamp = dataProduct.acquisition_time,
+                                                                            latitude = newLatitude,
+                                                                            longitude = newLongitude, 
+                                                                            altitude = newAltitude)
+        else:
+            dataProduct.user_position.latitude = newLatitude
+            dataProduct.user_position.longitude = newLongitude
+            dataProduct.user_position.altitude = newAltitude
+            dataProduct.user_position.save()
+        dataProduct.save()
 
 def editInstrumentData(request, instrument_name, pk):
     form = ImportInstrumentDataForm()

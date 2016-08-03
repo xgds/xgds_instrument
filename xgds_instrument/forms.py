@@ -13,7 +13,7 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 # __END_LICENSE__
-
+import datetime
 from django import forms
 from django.conf import settings
 import pytz
@@ -40,8 +40,7 @@ class ImportInstrumentDataForm(AbstractImportTrackedForm):
                                        input_formats=date_formats,
                                        required=True,
                                        )
-    INSTRUMENT_MODEL = \
-                LazyGetModelByName(settings.XGDS_INSTRUMENT_INSTRUMENT_MODEL)
+    INSTRUMENT_MODEL = LazyGetModelByName(settings.XGDS_INSTRUMENT_INSTRUMENT_MODEL)
     instrument = InstrumentModelChoiceField(INSTRUMENT_MODEL.get().objects.all(), 
                                             label="Instrument")
     portableDataFile = ExtFileField(ext_whitelist=(".spc",".txt",".csv",".asp" ),
@@ -51,6 +50,10 @@ class ImportInstrumentDataForm(AbstractImportTrackedForm):
                                         required=False,
                                         label="Manufacturer Data File")
 
+    lat = forms.FloatField(label="Latitude", required=False)
+    lon = forms.FloatField(label="Longitude", required=False)
+    alt = forms.FloatField(label="Altitude", required=False)
+    
     def clean_dataCollectionTime(self):
         ctime = self.cleaned_data['dataCollectionTime']
 
@@ -62,3 +65,23 @@ class ImportInstrumentDataForm(AbstractImportTrackedForm):
             localizedTime = tz.localize(naiveTime)
             utctime = localizedTime.astimezone(pytz.utc)
             return utctime
+        
+    def save(self, commit=True):
+        instance = super(ImportInstrumentDataForm, self).save(commit=False)
+        if (('lat' in self.changed_data) and ('lon' in self.changed_data)) or ('alt' in self.changed_data):
+            if instance.user_position is None:
+                LOCATION_MODEL = LazyGetModelByName(settings.GEOCAM_TRACK_PAST_POSITION_MODEL)
+                instance.user_position = LOCATION_MODEL.get().objects.create(serverTimestamp = datetime.datetime.now(pytz.utc),
+                                                                             timestamp = instance.acquisition_time,
+                                                                             latitude = self.cleaned_data['lat'],
+                                                                             longitude = self.cleaned_data['lon'], 
+                                                                             altitude = self.cleaned_data['alt'])
+            else:
+                instance.user_position.latitude = self.cleaned_data['lat']
+                instance.user_position.longitude = self.cleaned_data['lon']
+                instance.user_position.altitude = self.cleaned_data['alt']
+                instance.user_position.save()
+
+        if commit:
+            instance.save()
+        return instance
