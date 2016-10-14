@@ -136,6 +136,24 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
     @property
     def samples(self):
         return []
+    
+    @classmethod
+    def getSearchFormFields(cls):
+        return ['name',
+                'description',
+                'collector',
+                'creator',
+                ]
+    
+    @classmethod
+    def getSearchFieldOrder(cls):
+        return ['name',
+                'description',
+                'collector',
+                'creator',
+                'acquisition_timezone',
+                'min_acquisition_time',
+                'max_acquisition_time']
 
 #     def toMapDict(self):
 #         result = modelToDict(self, exclude=("manufacturer_data_file", "portable_data_file"))

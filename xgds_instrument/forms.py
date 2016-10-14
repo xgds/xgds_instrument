@@ -14,16 +14,19 @@
 # specific language governing permissions and limitations under the License.
 # __END_LICENSE__
 import datetime
+import pytz
 from django import forms
 from django.conf import settings
-import pytz
+from django.utils.functional import lazy
 
 from geocamTrack.forms import AbstractImportTrackedForm
 from geocamUtil.extFileField import ExtFileField
 from geocamUtil.loader import LazyGetModelByName
 from django.forms import DateTimeField, ModelChoiceField
 from geocamUtil.extFileField import ExtFileField
+from geocamUtil.forms.AbstractImportForm import getTimezoneChoices
 
+from xgds_core.forms import SearchForm
 
 class InstrumentModelChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
@@ -85,3 +88,52 @@ class ImportInstrumentDataForm(AbstractImportTrackedForm):
         if commit:
             instance.save()
         return instance
+
+
+class SearchInstrumentDataForm(SearchForm):
+    
+    min_acquisition_time = forms.DateTimeField(required=False, label='Min Time',
+                                         widget=forms.DateTimeInput(attrs={'class': 'datetimepicker'}))
+    max_acquisition_time = forms.DateTimeField(required=False, label = 'Max Time',
+                                         widget=forms.DateTimeInput(attrs={'class': 'datetimepicker'}))
+    
+    acquisition_timezone = forms.ChoiceField(required=False, choices=lazy(getTimezoneChoices, list)(empty=True), 
+                                             label='Time Zone', help_text='Required for Min/Max Time')
+
+    
+    # populate the times properly
+    def clean_min_acquisition_time(self):
+        return self.clean_time('min_acquisition_time', self.clean_acquisition_timezone())
+
+    # populate the times properly
+    def clean_max_acquisition_time(self):
+        return self.clean_time('max_acquisition_time', self.clean_acquisition_timezone())
+    
+    def clean_acquisition_timezone(self):
+        if self.cleaned_data['acquisition_timezone'] == 'utc':
+            return 'Etc/UTC'
+        else:
+            return self.cleaned_data['acquisition_timezone']
+        return None
+
+    def clean(self):
+        cleaned_data = super(SearchInstrumentDataForm, self).clean()
+        acquisition_timezone = cleaned_data.get("acquisition_timezone")
+        min_acquisition_time = cleaned_data.get("min_acquisition_time")
+        max_acquisition_time = cleaned_data.get("max_acquisition_time")
+
+        if min_acquisition_time or max_acquisition_time:
+            if not acquisition_timezone:
+                self.add_error('event_timezone',"Time Zone is required for min / max times.")
+                raise forms.ValidationError(
+                    "Time Zone is required for min / max times."
+                )
+
+    def buildQueryForField(self, fieldname, field, value, minimum=False, maximum=False):
+        if fieldname == 'description' or fieldname == 'name':
+            return self.buildContainsQuery(fieldname, field, value)
+        return super(SearchInstrumentDataForm, self).buildQueryForField(fieldname, field, value, minimum, maximum)
+        
+
+    class Meta:
+        abstract = True
