@@ -19,6 +19,8 @@ from django import forms
 from django.conf import settings
 from django.utils.functional import lazy
 
+from dal import autocomplete
+
 from geocamTrack.forms import AbstractImportTrackedForm
 from geocamUtil.extFileField import ExtFileField
 from geocamUtil.loader import LazyGetModelByName
@@ -27,6 +29,8 @@ from geocamUtil.extFileField import ExtFileField
 from geocamUtil.forms.AbstractImportForm import getTimezoneChoices
 
 from xgds_core.forms import SearchForm
+from xgds_core.models import XgdsUser
+
 
 class InstrumentModelChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
@@ -43,6 +47,10 @@ class ImportInstrumentDataForm(AbstractImportTrackedForm):
                                        input_formats=date_formats,
                                        required=True,
                                        )
+    collector = forms.ModelChoiceField(XgdsUser.objects.all(), 
+                                       widget=autocomplete.ModelSelect2(url='select2_model_user'),
+                                       required=False)
+
     INSTRUMENT_MODEL = LazyGetModelByName(settings.XGDS_INSTRUMENT_INSTRUMENT_MODEL)
     instrument = InstrumentModelChoiceField(INSTRUMENT_MODEL.get().objects.all(), 
                                             label="Instrument")
@@ -56,6 +64,8 @@ class ImportInstrumentDataForm(AbstractImportTrackedForm):
     lat = forms.FloatField(label="Latitude", required=False)
     lon = forms.FloatField(label="Longitude", required=False)
     alt = forms.FloatField(label="Altitude", required=False)
+    
+
     
     def clean_dataCollectionTime(self):
         ctime = self.cleaned_data['dataCollectionTime']
@@ -99,6 +109,10 @@ class SearchInstrumentDataForm(SearchForm):
     
     acquisition_timezone = forms.ChoiceField(required=False, choices=lazy(getTimezoneChoices, list)(empty=True), 
                                              label='Time Zone', help_text='Required for Min/Max Time')
+    
+    collector = forms.ModelChoiceField(XgdsUser.objects.all(), 
+                                       widget=autocomplete.ModelSelect2(url='select2_model_user'),
+                                       required=False)
 
     
     # populate the times properly

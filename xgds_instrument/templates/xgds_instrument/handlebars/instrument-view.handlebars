@@ -4,6 +4,12 @@
 			<th><label for="id_acquisition_time">Acquisition time:</label></th>
 			<td>{{prettyTime acquisition_time acquisition_timezone}}</td>
 		</tr>
+		{{#if collector_name}}
+		<tr>
+			<th><label for="id_ev_name">Collector:</label></th>
+			<td>{{collector_name}}</td>
+		</tr>
+		{{/if}}
 		{{#if manufacturer_data_file_url}}
 		<tr>
 			<th><label for="id_manufacturer_data_file">Manufacturer data file:</label></th>

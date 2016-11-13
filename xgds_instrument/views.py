@@ -13,7 +13,6 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 # __END_LICENSE__
-
 import datetime
 import json
 import csv
@@ -83,7 +82,10 @@ def instrumentDataImport(request):
                              request.FILES["manufacturerDataFile"],
                              form.cleaned_data["dataCollectionTime"],
                              form.getTimezone(), form.getResource(),
-                             request.user)
+                             request.user, form.cleaned_data['lat'],
+                             form.cleaned_data['lon'],
+                             form.cleaned_data['alt'],
+                             form.cleaned_data["collector"])
         else:
             errors = form.errors
     else:
