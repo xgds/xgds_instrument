@@ -15,6 +15,15 @@
 
 {% block content %}
 <strong>{{instrumentType}} Data Import Form</strong>
+{% if errors %}
+	 <div  id="messages" class="error">
+	    <ul class="messages" id="errorMessage" style="color:red;">
+	    {% for error in errors %}
+	        <li>  {{ error }}</li>
+	    {% endfor %}
+	    </ul>
+	</div>
+	{% endif %}
 <form id="instrument_data_import" action="{{instrumentDataImportUrl}}" method="post" enctype="multipart/form-data">
 	<table>
     {{ form.as_table }}
