@@ -65,7 +65,14 @@ class ImportInstrumentDataForm(AbstractImportTrackedForm):
     lon = forms.FloatField(label="Longitude", required=False)
     alt = forms.FloatField(label="Altitude", required=False)
     
-
+    def editingSetup(self, dataProduct):
+        self.fields['portableDataFile'].widget = forms.HiddenInput()
+        self.fields['manufacturerDataFile'].widget = forms.HiddenInput()
+        self.fields['portableDataFile'].initial = dataProduct.portable_data_file
+        self.fields['manufacturerDataFile'].initial = dataProduct.manufacturer_data_file
+        
+    def handleFileUpdate(self, dataProduct, key):
+        pass
     
     def clean_dataCollectionTime(self):
         ctime = self.cleaned_data['dataCollectionTime']

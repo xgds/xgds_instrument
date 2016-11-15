@@ -37,21 +37,44 @@ def lookupImportFunctionByName(moduleName, functionName):
                        functionName)
     return function
 
+def cleanValue(s):
+    if not s:
+        return None
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+def isNumber(s):
+    if not s:
+        return False
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
 
 def editInstrumentDataPosition(dataProduct, newLatitude, newLongitude, newAltitude):
+    cleanLatitude = cleanValue(newLatitude)
+    cleanLongitude = cleanValue(newLongitude)
+    cleanAltitude = cleanValue(newAltitude)
+    if not newLatitude or not newLongitude:
+        return
+    
+    
     ''' create or update the user position for an instrument data reading '''
-    if newLatitude != dataProduct.lat or newLongitude != dataProduct.lon or newAltitude != dataProduct.alt:
+    if cleanLatitude != dataProduct.lat or cleanLongitude != dataProduct.lon or cleanAltitude != dataProduct.alt:
         if dataProduct.user_position is None:
             LOCATION_MODEL = LazyGetModelByName(settings.GEOCAM_TRACK_PAST_POSITION_MODEL)
             dataProduct.user_position = LOCATION_MODEL.get().objects.create(serverTimestamp = datetime.datetime.now(pytz.utc),
                                                                             timestamp = dataProduct.acquisition_time,
-                                                                            latitude = newLatitude,
-                                                                            longitude = newLongitude, 
-                                                                            altitude = newAltitude)
+                                                                            latitude = cleanLatitude,
+                                                                            longitude = cleanLongitude, 
+                                                                            altitude = cleanAltitude)
         else:
-            dataProduct.user_position.latitude = newLatitude
-            dataProduct.user_position.longitude = newLongitude
-            dataProduct.user_position.altitude = newAltitude
+            dataProduct.user_position.latitude = cleanLatitude
+            dataProduct.user_position.longitude = cleanLongitude
+            dataProduct.user_position.altitude = cleanAltitude
             dataProduct.user_position.save()
         dataProduct.save()
 
