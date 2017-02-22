@@ -65,11 +65,11 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
     name = models.CharField(max_length=128, default='', blank=True, null=True, db_index=True)
     description = models.CharField(max_length=2048, blank=True)
 
-    manufacturer_data_file = models.FileField(upload_to=getNewDataFileName, max_length=255, null=True, blank=True, storage=couchStore)
+    manufacturer_data_file = models.FileField(upload_to=getNewDataFileName, max_length=256, null=True, blank=True, storage=couchStore)
     manufacturer_mime_type = models.CharField(max_length=128,
                                              default="application/octet-stream",
                                               null=True, blank=True)
-    portable_data_file = models.FileField(upload_to=getNewDataFileName, max_length=255, storage=couchStore)
+    portable_data_file = models.FileField(upload_to=getNewDataFileName, max_length=256, storage=couchStore)
     portable_mime_type = models.CharField(max_length=128, default="text/plain")
     portable_file_format_name = models.CharField(max_length=128, default="ASCII")
     acquisition_time = models.DateTimeField(null=True, blank=True, db_index=True)
