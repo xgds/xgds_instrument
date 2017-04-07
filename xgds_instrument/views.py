@@ -101,14 +101,21 @@ def instrumentDataImport(request):
             importFxn = lookupImportFunctionByName(
                 settings.XGDS_INSTRUMENT_IMPORT_MODULE_PATH,
                 instrument.dataImportFunctionName)
-            return importFxn(instrument, request.FILES["portableDataFile"],
-                             request.FILES["manufacturerDataFile"],
-                             form.cleaned_data["dataCollectionTime"],
-                             form.getTimezone(), form.getResource(),
-                             request.user, form.cleaned_data['lat'],
-                             form.cleaned_data['lon'],
-                             form.cleaned_data['alt'],
-                             form.cleaned_data["collector"])
+            object_id = None
+            if 'object_id' in form.cleaned_data:
+                object_id = int(form.cleaned_data['object_id'])
+            return importFxn(instrument=instrument, 
+                             portableDataFile=request.FILES["portableDataFile"],
+                             manufacturerDataFile=request.FILES["manufacturerDataFile"],
+                             utcStamp=form.cleaned_data["dataCollectionTime"],
+                             timezone=form.getTimezone(), 
+                             resource=form.getResource(),
+                             user=request.user, 
+                             latitude=form.cleaned_data['lat'],
+                             longitude=form.cleaned_data['lon'],
+                             altitude=form.cleaned_data['alt'],
+                             collector=form.cleaned_data["collector"],
+                             object_id=object_id)
         else:
             errors = form.errors
     else:
