@@ -17,7 +17,7 @@ import datetime
 import json
 import csv
 import pytz
-import httplib2
+import httplib
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404, HttpResponse
@@ -95,7 +95,7 @@ def editInstrumentData(request, instrument_name, pk):
 @login_required
 def instrumentDataImport(request):
     errors = None
-    status = httplib2.OK
+    status = httplib.OK
     if request.method == 'POST':
         form = ImportInstrumentDataForm(request.POST, request.FILES)
         if form.is_valid():
@@ -120,7 +120,7 @@ def instrumentDataImport(request):
                              object_id=object_id)
         else:
             errors = form.errors
-            status = status=httplib2.NOT_ACCEPTABLE
+            status = status=httplib.NOT_ACCEPTABLE
     else:
         form = ImportInstrumentDataForm()
     return render(
