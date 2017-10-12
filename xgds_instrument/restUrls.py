@@ -14,17 +14,10 @@
 # specific language governing permissions and limitations under the License.
 #__END_LICENSE__
 
-from django.conf.urls import url, include
+from django.conf.urls import url
 from xgds_instrument import views
 
 
 urlpatterns = [
-    url(r'^instrumentDataImport/$', views.instrumentDataImport, name='instrument_data_import'),
-    url(r'^edit/(?P<instrument_name>\w*)/(?P<pk>[\d]+)$', views.editInstrumentData, name="instrument_data_edit"),
-    url(r'^getInstrumentDataCsv/(?P<productModel>[\w]+[\.]*[\w]*)/(?P<productPk>[\d]+)$', views.getInstrumentDataCsv, name='instrument_data_csv'),
-    
-    # Including these in this order ensures that reverse will return the non-rest urls for use in our server
-    url(r'^rest/', include('xgds_instrument.restUrls')),
-    url('', include('xgds_instrument.restUrls')),
-
+    url(r'^getInstrumentDataJson/(?P<productModel>[\w]+[\.]*[\w]*)/(?P<productPk>[\d]+)$', views.getInstrumentDataJson, name='instrument_data_json'),
 ]
