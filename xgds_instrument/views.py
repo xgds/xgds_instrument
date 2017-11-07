@@ -20,7 +20,6 @@ import pytz
 import httplib
 
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from xgds_instrument.forms import ImportInstrumentDataForm
@@ -89,7 +88,6 @@ def editInstrumentData(request, instrument_name, pk):
     )
 
 
-@login_required
 def instrumentDataImport(request):
     errors = None
     status = httplib.OK
