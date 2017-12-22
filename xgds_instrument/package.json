@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "flot": "flot/flot",
-    "flot-axislabels": "markrcote/flot-axislabels"
+    "flot": "^0.8.0-alpha",
+    "flot-axislabels": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {

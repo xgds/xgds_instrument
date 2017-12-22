@@ -10,3 +10,4 @@
 /xgds_instrument/build
 TEST
 migrations
+node_modules
