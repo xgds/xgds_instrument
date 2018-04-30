@@ -21,14 +21,13 @@ from django.utils.functional import lazy
 
 from dal import autocomplete
 
-from geocamTrack.forms import AbstractImportTrackedForm
 from geocamUtil.extFileField import ExtFileField
 from geocamUtil.loader import LazyGetModelByName
 from django.forms import DateTimeField, ModelChoiceField
 from geocamUtil.extFileField import ExtFileField
 from geocamUtil.forms.AbstractImportForm import getTimezoneChoices
 
-from xgds_core.forms import SearchForm
+from xgds_core.forms import SearchForm, AbstractImportVehicleForm
 from xgds_core.models import XgdsUser
 
 
@@ -37,7 +36,7 @@ class InstrumentModelChoiceField(ModelChoiceField):
         return obj.displayName
 
 
-class ImportInstrumentDataForm(AbstractImportTrackedForm):
+class ImportInstrumentDataForm(AbstractImportVehicleForm):
     date_formats = list(forms.DateTimeField.input_formats) + [
         '%Y/%m/%d %H:%M:%S',
         '%Y-%m-%d %H:%M:%S',
