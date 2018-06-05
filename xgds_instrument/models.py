@@ -143,6 +143,7 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
                 'description',
                 'collector',
                 'creator',
+                'flight__vehicle'
                 ]
     
     @classmethod
@@ -151,6 +152,7 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
                 'description',
                 'collector',
                 'creator',
+                'flight__vehicle',
                 'acquisition_timezone',
                 'min_acquisition_time',
                 'max_acquisition_time']

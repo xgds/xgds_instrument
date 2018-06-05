@@ -101,13 +101,13 @@ def instrumentDataImport(request):
             object_id = None
             if 'object_id' in form.cleaned_data:
                 object_id = int(form.cleaned_data['object_id'])
-            return importFxn(instrument=instrument, 
+            return importFxn(instrument=instrument,
                              portableDataFile=request.FILES["portableDataFile"],
                              manufacturerDataFile=request.FILES["manufacturerDataFile"],
                              utcStamp=form.cleaned_data["dataCollectionTime"],
-                             timezone=form.getTimezone(), 
-                             resource=form.getResource(),
-                             user=request.user, 
+                             timezone=form.getTimezone(),
+                             vehicle=form.getVehicle(),
+                             user=request.user,
                              latitude=form.cleaned_data['lat'],
                              longitude=form.cleaned_data['lon'],
                              altitude=form.cleaned_data['alt'],
