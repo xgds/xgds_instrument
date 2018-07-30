@@ -15,7 +15,7 @@
 # __END_LICENSE__
 import datetime
 import json
-import csv
+import pandas as pd
 import pytz
 import httplib
 
@@ -138,19 +138,11 @@ def getInstrumentDataJson(request, productModel, productPk):
     return HttpResponse(json.dumps(sampleList), content_type='application/json')
 
 
-def getInstrumentDataCsv(request, productModel, productPk):
+def getInstrumentDataCsvResponse(request, productModel, productPk):
     INSTRUMENT_DATA_PRODUCT_MODEL = LazyGetModelByName(productModel)
     dataProduct = get_object_or_404(INSTRUMENT_DATA_PRODUCT_MODEL.get(), pk=productPk)
-    sampleList = dataProduct.samples
-    labels = settings.XGDS_MAP_SERVER_JS_MAP[dataProduct.instrument.displayName]['plotLabels']
-    stringtime = dataProduct.acquisition_time.astimezone(pytz.timezone(dataProduct.acquisition_timezone)).strftime('%Y_%m_%d_%H%M')
-    filename = "%s_%s.csv" % (dataProduct.instrument.displayName, stringtime) 
+    filename, dataframe = dataProduct.getInstrumentDataCsv()
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=' + filename
-
-    csvWriter = csv.writer(response, quoting=csv.QUOTE_NONNUMERIC)
-    csvWriter.writerow(labels)
-    for s in sampleList:
-        csvWriter.writerow(s)
-        
+    dataframe.to_csv(response, index=False)
     return response
