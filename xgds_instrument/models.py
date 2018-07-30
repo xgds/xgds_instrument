@@ -22,6 +22,8 @@ from geocamUtil.modelJson import modelToDict
 from geocamUtil.UserUtil import getUserName
 from xgds_core.couchDbStorage import CouchDbStorage
 from xgds_core.models import SearchableModel
+import pytz
+import pandas as pd
 
 def getNewDataFileName(instance, filename):
     return settings.XGDS_INSTRUMENT_DATA_SUBDIRECTORY + filename
@@ -157,39 +159,15 @@ class AbstractInstrumentDataProduct(models.Model, SearchableModel):
                 'min_acquisition_time',
                 'max_acquisition_time']
 
-#     def toMapDict(self):
-#         result = modelToDict(self, exclude=("manufacturer_data_file", "portable_data_file"))
-#         result['pk'] = int(self.pk)
-#         result['app_label'] = self.app_label
-#         result['model_type'] = self.model_type
-# 
-#         if self.collector:
-#             result['collector'] = getUserName(self.collector)
-#         else:
-#             result['collector'] = ''
-#         del result['creator']
-#         result['type'] = 'InstrumentDataProduct'
-#         result['instrument_name'] = self.instrument.displayName
-#         result['acquisition_time'] = self.acquisition_time.strftime('%Y-%m-%d %H:%M:%S')
-#         result['acquisition_timezone'] = str(self.acquisition_timezone)
-#         result['manufacturer_data_file_url'] = self.manufacturer_data_file.url
-#         result['portable_data_file_url'] = self.portable_data_file.url
-#         result['jsonDataUrl'] = self.jsonDataUrl
-#         result['csvDataUrl'] = self.csvDataUrl
-#         if self.location:
-#             result['lat'] = self.lat
-#             result['lon'] = self.lon
-#             if self.location.altitude:
-#                 result['altitude'] = self.altitude
-#         else: 
-#             result['lat'] = ''
-#             result['lon'] = ''
-#         if self.name: 
-#             result['name'] = self.name
-#         if self.description: 
-#             result['description'] = self.description
-#         return result
-    
+    def getInstrumentDataCsv(self):
+        sampleList = self.samples
+        labels = settings.XGDS_MAP_SERVER_JS_MAP[self.instrument.displayName]['plotLabels']
+        stringtime = self.acquisition_time.astimezone(pytz.timezone(self.acquisition_timezone)).strftime(
+            '%Y_%m_%d_%H%M')
+        filename = "%s_%s.csv" % (self.instrument.displayName, stringtime)
+        dataframe = pd.DataFrame(data=sampleList, columns=labels)
+        return filename, dataframe
+
     class Meta:
         abstract = True
 
