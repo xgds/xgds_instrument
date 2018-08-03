@@ -150,6 +150,9 @@ class SearchInstrumentDataForm(SearchForm):
                 raise forms.ValidationError(
                     "Time Zone is required for min / max times."
                 )
+            else:
+                del cleaned_data["acquisition_timezone"]
+
 
     def buildQueryForField(self, fieldname, field, value, minimum=False, maximum=False):
         if fieldname == 'description' or fieldname == 'name':
