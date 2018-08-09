@@ -152,6 +152,7 @@ class SearchInstrumentDataForm(SearchForm):
                 )
             else:
                 del cleaned_data["acquisition_timezone"]
+        return cleaned_data
 
 
     def buildQueryForField(self, fieldname, field, value, minimum=False, maximum=False):
