@@ -125,7 +125,9 @@ def instrumentDataImport(request):
             'form': form,
             'errorstring': errors,
             'instrumentDataImportUrl': reverse('instrument_data_import'),
-            'instrumentType': 'Science Instruments'
+            'instrumentType': 'Science Instruments',
+            'title': settings.XGDS_CORE_FLIGHT_MONIKER,
+            'help_content_path': 'xgds_instrument/help/import.rst'
         },
         status=status
     )
