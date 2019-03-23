@@ -1,5 +1,5 @@
 
-**Import Instrument** lets you add TODO.
+**Import Instrument** lets you import raw instrument data.
 
 Part A:
 ---------------------
